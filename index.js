@@ -18,10 +18,42 @@ async function run() {
         await client.connect();
         const database = client.db("car_shop");
         const productCollection = database.collection("products");
+        const orderCollection = database.collection("orders");
+        const orderReview = database.collection("review");
 
         // get service 
         app.get('/products', async (req, res) => {
             const result = await productCollection.find({}).toArray();
+            res.json(result)
+        })
+
+        // get single service
+        app.get('/products/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await productCollection.find(query).toArray();
+            res.send(result[0])
+        })
+        // Post method for orders
+        app.post('/orders', async (req, res) => {
+            const query = req.body;
+            const result = await orderCollection.insertOne(query)
+            res.json(result)
+        })
+        // Get Orders 
+        app.get('/orders', async (req, res) => {
+            const result = await orderCollection.find({}).toArray();
+            res.json(result)
+        })
+        // POST Order Review
+        app.post('/review', async (req, res) => {
+            const query = req.body;
+            const result = await orderReview.insertOne(query)
+            res.json(result)
+        })
+        // Get review
+        app.get('/review', async (req, res) => {
+            const result = await orderReview.find({}).toArray();
             res.json(result)
         })
 
