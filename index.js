@@ -20,6 +20,7 @@ async function run() {
         const productCollection = database.collection("products");
         const orderCollection = database.collection("orders");
         const orderReview = database.collection("review");
+        const userCollection = database.collection("users");
 
         // get service 
         app.get('/products', async (req, res) => {
@@ -40,9 +41,24 @@ async function run() {
             const result = await orderCollection.insertOne(query)
             res.json(result)
         })
-        // Get Orders 
+        // Get my Orders 
         app.get('/orders', async (req, res) => {
+            const email = req.query.email;
+            const query = { email: email }
+            const result = await orderCollection.find(query).toArray();
+            res.json(result)
+        })
+        //Get All Orders for Manage
+        app.get('/manageOrders', async (req, res) => {
             const result = await orderCollection.find({}).toArray();
+            res.json(result)
+        })
+        // Delete Single Order
+        app.delete('/singleOrder/:id', async (req, res) => {
+            const id = req.params;
+            const query = { _id: ObjectId(id) }
+            const result = await orderCollection.deleteOne(query);
+            console.log(result)
             res.json(result)
         })
         // POST Order Review
@@ -54,6 +70,37 @@ async function run() {
         // Get review
         app.get('/review', async (req, res) => {
             const result = await orderReview.find({}).toArray();
+            res.json(result)
+        })
+        // Delete single data of my order
+        app.delete('/orders', async (req, res) => {
+            const id = req.query.id;
+            console.log(id)
+            const query = { _id: ObjectId(id) }
+            const result = await orderCollection.deleteOne(query)
+            console.log(result)
+            res.json(result)
+        })
+        // Add A New Product to ProductCollection
+        app.post('/addNewProduct', async (req, res) => {
+            const query = req.body;
+            const result = await productCollection.insertOne(query);
+            res.json(result)
+        })
+        // Post user
+        app.post('/users', async (req, res) => {
+            const user = req.body;
+            const result = await userCollection.insertOne(user)
+            console.log(result)
+            res.json(result)
+        })
+        // Make Admin Role
+        app.put('/users/admin', async (req, res) => {
+            const user = req.body;
+            console.log(user)
+            const filter = { email: user.email }
+            const updateDoc = { $set: { role: 'admin' } };
+            const result = await userCollection.updateOne(filter, updateDoc)
             res.json(result)
         })
 
