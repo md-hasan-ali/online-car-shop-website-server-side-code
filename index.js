@@ -30,6 +30,13 @@ async function run() {
             const result = await productCollection.find({}).toArray();
             res.json(result)
         })
+        // DELETE a product 
+        app.delete('/manage/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: ObjectId(id) }
+            const result = await productCollection.deleteOne(query);
+            res.json(result)
+        })
 
         // get single service
         app.get('/products/:id', async (req, res) => {
