@@ -124,6 +124,16 @@ async function run() {
             }
             res.json({ admin: isAdmin })
         })
+        // Status Update 
+        app.put('/updateStatus/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: ObjectId(id) }
+            const update = 'Approved';
+            const result = await orderCollection.updateOne(filter, {
+                $set: { status: update }
+            })
+            res.json(result)
+        })
     }
     finally {
         // await client.close();
